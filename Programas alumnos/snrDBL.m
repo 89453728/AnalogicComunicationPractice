@@ -7,10 +7,15 @@
 
 % ****************** CÁLCULO SNR SIMULADA  ****************
 % DEMODULADOR cuando no hay ruido
-rs =rsin;   % Señal recibida sin ruido                      
+rs =rsin;   % Señal recibida sin ruido (la que tiene ruido se llama r)           
 yss = rs*sqrt(2) .*prx;          % Señal multiplicada por el tono de Rx 
-ss = filtroPasoBajo(t,yss,WPOS); % Señal a la salida sin ruido  
-Ps_sim = _________;   % Potencia de la señal             
+ss = filtroPasoBajo(t,yss,WPOS); % Señal a la salida sin ruido
+% Potencia senal coseno: .5
+% Potencia senal cuadrada PWM 50%: .5
+% Potencia senal triangular: 
+%
+Ps_sim = sum(ss.^2)/length(ss);   % Potencia de la señal: Esperanza de la 
+                                    % se
 
 % DEMODULADOR cuando sólo hay ruido
 rn = r;  % Señal recibida cuando sólo hay ruido 
@@ -28,8 +33,8 @@ disp(['SNRsimul = ' num2str(SNR_sim)]);
 Ps_teo = .5*Ps*(A*a)^2;                
         
 % Potencia del ruido en función N0_2 y WPOS
-Pn_teo = _________;                 
+Pn_teo = N0_2*WPOS;                 
 
 % SNR en decibelios
-SNR_teo = _________;                 
+SNR_teo = 20*log10(N0_2);                 
 disp(['SNRteórica = ' num2str(SNR_teo)]);
