@@ -30,11 +30,11 @@ t2 = 0.02;      % Instante de tiempo final a representar
 % ******************************************************
 
 % MODULADOR 
-%m = GenSignal(t,'coseno',fm);               % 1 tono dentro de la banda
+m = GenSignal(t,'coseno',fm);               % 1 tono dentro de la banda
 %m = GenSignal(t,'cuadrada',fm);               % 1 tono dentro de la banda
 %m = GenSignal(t,'triangular',fm);               % 1 tono dentro de la banda
 %m = GenSignal(t,'aleatoriaFilt',W);               % 1 tono dentro de la banda
-m = GenSignalSound(t,'chord.wav',W);           % Señal de audio 
+%m = GenSignalSound(t,'chord.wav',W);           % Señal de audio 
 
 
 m=m/max(abs(m)); %¡m debe estar normalizada!
