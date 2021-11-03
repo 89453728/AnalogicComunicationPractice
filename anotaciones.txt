@@ -1,0 +1,41 @@
+
+==================================================================================================
+Cuestión 2.5. Modifique el programa sistDBL para añadir al canal un ruido aditivo de resultante para distintos valores de 20 (10-6, 10-8, 10-10, 10-12 Wz ) y para dos tipos de señales
+
+Probando con la señal de audio chord.wav, he llegado a las siguientes conclusiones
+
+* ruido con N0/2=1e-6
+La densidad espectral de ruido es demasiado alta y distorsiona mucho la señal
+
+* ruido con N0/2=1e-8
+Tras disminuir en 40dB la DEP, el ruido ahora es mucho menos notorio dejando apreciar bien la recuperacion de la señal
+
+* ruido con N0/2=1e-10 y N0/2=1e-12
+Como es logico, tanto en el caso N0/2=1e-10 y 1e-12, el ruido es mucho mas despreciable que el caso anterior y logicamente no se 
+nota  el efecto que tiene a la hora de demodular la señal pudiendo ver perfectamente la forma de la moduladora
+
+En el audio, solo lo llego a apreciar con N0/2=1e-6, para el resto de valores es inperceptible como es logico.
+El efecto del ruido es como oir una cascada de fondo dentro del audio, simplemente enmascara un poco el sonido real.
+
+Para añadir la señal de ruido dentro del modelo, he aplicado la funcion Ruido(t,N0_2) sumandola con la portadora modulada.
+
+==================================================================================================
+
+Cuestión 2.6. Complete el Listado 2 del programa snrDBL para que estime la SNR a la salida del sistema DBL. Asuma que este programa se ejecuta a continuación del programa sistDBL y que, por tanto, todas las variables definidas en este último están disponibles. Para el cálculo de la potencia de una señal, puede emplear la función de MATLAB mean para realizar los promedios.
+
+==================================================================================================
+Cuestión 2.7. Complete el Listado 2 para que también realice el cálculo teórico de la SNR a la salida del receptor en el caso de que la moduladora sea un tono. Exprésela en función de los
+parámetros A, a, N20 y W. Justifique adecuadamente las expresiones empleadas. Configure el programa sistDBL para que la señal moduladora sea un tono de amplitud tal que la potencia transmitida sea 5 dBw, la atenuación del canal sean 20 dB y la densidad espectral de potencia
+
+N20 10 10 HzW . Anote los valores de SNR simulados. ¿Hasta qué punto son similares a los teóricos?
+
+==================================================================================================
+Cuestión 2.8. Modifique el ancho de banda del filtro postdetector de manera que sea 4 veces mayor que el ancho de banda de la señal de información. Vuelva a estimar la SNR y compruebe en qué medida disminuye. Explique por qué, calcule teóricamente cuánto y compruebe si dicho valor teórico encaja con el valor estimado de SNR.
+
+==================================================================================================
+Cuestión 2.9. Con idea de saber, de manera subjetiva, qué valores de SNR son adecuados para una señal de audio, realice el siguiente experimento. Utilice alguna de las señales de
+
+audio (chord.wav o ding.wav) como señal moduladora y, modificando el valor de N20 o de A del programa sistDBL, estime valores de SNR para los que considere que la señal se oye perfectamente, con ruido moderado y con ruido muy molesto.
+
+==================================================================================================
+
