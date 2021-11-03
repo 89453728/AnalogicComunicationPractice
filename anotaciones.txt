@@ -1,0 +1,137 @@
+
+==================================================================================================
+Cuestión 2.5. Modifique el programa sistDBL para añadir al canal un ruido aditivo de resultante para distintos valores de 20 (10-6, 10-8, 10-10, 10-12 Wz ) y para dos tipos de señales
+
+Probando con la señal de audio chord.wav, he llegado a las siguientes conclusiones
+
+* ruido con N0/2=1e-6
+La densidad espectral de ruido es demasiado alta y distorsiona mucho la señal
+
+* ruido con N0/2=1e-8
+Tras disminuir en 40dB la DEP, el ruido ahora es mucho menos notorio dejando apreciar bien la recuperacion de la señal
+
+* ruido con N0/2=1e-10 y N0/2=1e-12
+Como es logico, tanto en el caso N0/2=1e-10 y 1e-12, el ruido es mucho mas despreciable que el caso anterior y logicamente no se 
+nota  el efecto que tiene a la hora de demodular la señal pudiendo ver perfectamente la forma de la moduladora
+
+En el audio, solo lo llego a apreciar con N0/2=1e-6, para el resto de valores es inperceptible como es logico.
+El efecto del ruido es como oir una cascada de fondo dentro del audio, simplemente enmascara un poco el sonido real.
+
+Para añadir la señal de ruido dentro del modelo, he aplicado la funcion Ruido(t,N0_2) sumandola con la portadora modulada.
+
+==================================================================================================
+
+Cuestión 2.6. Complete el Listado 2 del programa snrDBL para que estime la SNR a la salida del sistema DBL. Asuma que este programa se ejecuta a continuación del programa sistDBL y que, por tanto, todas las variables definidas en este último están disponibles. Para el cálculo de la potencia de una señal, puede emplear la función de MATLAB mean para realizar los promedios.
+
+
+% snrDBL.m
+% Script que estima la SNR a la salida de un sistema DBL
+% Asume que se ha llamado previamente a sistDBL y que las siguientes variables
+% están definidas: A, a, W, xT, n, prx
+
+
+
+% ****************** CÁLCULO SNR SIMULADA  ****************
+% DEMODULADOR cuando no hay ruido
+rs =rsin;   % Señal recibida sin ruido (la que tiene ruido se llama r)           
+yss = rs*sqrt(2) .*prx;          % Señal multiplicada por el tono de Rx 
+ss = filtroPasoBajo(t,yss,WPOS); % Señal a la salida sin ruido
+% Potencia senal coseno: .5
+% Potencia senal cuadrada PWM 50%: .5
+% Potencia senal triangular: 
+Ps_sim = mean(ss.^2);   % Potencia de la señal: varianza
+
+% DEMODULADOR cuando sólo hay ruido
+rn = r;  % Señal recibida cuando sólo hay ruido 
+nn = rn*sqrt(2) .*prx;           % Ruido recibido multiplicado por el tono de Rx
+ns = filtroPasoBajo(t,nn,WPOS);  % Señal a la salida con sólo ruido
+Pn_sim = mean(ns.^2);  % Potencia del ruido                   
+
+% SNR en decibelios
+SNR_sim = 20*log10(N0_2);           
+disp(['SNRsimul = ' num2str(SNR_sim)]);
+
+% ****************** CÁLCULO SNR teórica  ******************
+
+% Potencia de señal si la moduladora fuera un tono en función de A y a  
+% La potencia de la senal es 1/2
+Ps_teo = .5*(A*a)^2;                
+        
+% Potencia del ruido en función N0_2 y WPOS
+Pn_teo = N0_2*WPOS;                 
+
+% SNR en decibelios
+SNR_teo = 10*log10(Ps_teo/Pn_teo);                 
+disp(['SNRteórica = ' num2str(SNR_teo)]);
+
+
+Para el calculo de la potencia media, se ha hecho uso de la varianza al ser un proceso WSS.
+Hemos renombrado la señal r en la de 'sin ruido' a rsin para tener las dos
+Para el calculo de la potencia del ruido, al igual que la de la señal, es una WSS y por lo tanto basta con calcular la 
+varianza.
+La potencia teorica es la atenuacion al cuadrado multiplicada por la potencia de la señal
+La potencia del ruido es el area que ocupa su DEP 
+Para el SNR simplemente hay que calcular el cociente de ambos.
+==================================================================================================
+Cuestión 2.7. Complete el Listado 2 para que también realice el cálculo teórico de la SNR a la salida del receptor en el caso de que la moduladora sea un tono. Exprésela en función de los
+parámetros A, a, N20 y W. Justifique adecuadamente las expresiones empleadas. Configure el programa sistDBL para que la señal moduladora sea un tono de amplitud tal que la potencia transmitida sea 5 dBw, la atenuación del canal sean 20 dB y la densidad espectral de potencia N20 10 10 HzW . Anote los valores de SNR simulados. ¿Hasta qué punto son similares a los teóricos?
+
+Para la atenuacion hay que cambiar el valor de a
+a = 0.1;       % Atenuación
+ahora 20*log10(a)=20dB
+
+
+La simulada da una SNR de 97.4742
+La teorica da una SNR de 100.9691
+
+Hay una diferencia del 3.45%
+
+==================================================================================================
+Cuestión 2.8. Modifique el ancho de banda del filtro postdetector de manera que sea 4 veces mayor que el ancho de banda de la señal de información. Vuelva a estimar la SNR y compruebe en qué medida disminuye. Explique por qué, calcule teóricamente cuánto y compruebe si dicho valor teórico encaja con el valor estimado de SNR.
+
+
+Cambio el valor de WPOS a 4*W
+
+SNR simulada 91.2991
+SNR teorica 94.9485
+
+Hay una diferencia del 3.84%
+La diferencia crece ligeramente y el valor es menor por que la relacion señal ruido es menor debido a que ahora
+al tener mayor ancho de banda, hay una mayor cantidad de espectro de ruido que pasa el filtro.
+==================================================================================================
+Cuestión 2.9. Con idea de saber, de manera subjetiva, qué valores de SNR son adecuados para una señal de audio, realice el siguiente experimento. Utilice alguna de las señales de
+
+audio (chord.wav o ding.wav) como señal moduladora y, modificando el valor de N20 o de A del programa sistDBL, estime valores de SNR para los que considere que la señal se oye perfectamente, con ruido moderado y con ruido muy molesto.
+
+Con N0/2 = 1e-2 el ruido es demasiado apreciable
+Con N0/2 = 1e-4 y con 1e-6 sigue siendo apreciable
+Con N0/2 = 1e-8 el ruido ya no se nota, este es el punto optimo teniendo que A = 100 y que la atenuacion del canal 
+es de -40dB
+
+==================================================================================================
+
+
+PUNTO 3. MODULACIÓN AM
+
+
+Cuestión 3.1. A partir del programa sistDBL, cree el programa sistAM para que simule el
+sistema de la Figura 2 basado en la modulación AM con demodulación coherente. Para ello,
+puede utilizar la rutina SupContinua que suprime la componente de continua de una señal. Dé
+valor al índice de modulación  = 0.8. Repita las cuestiones 2.1, 2.2 (sólo para la señal
+triangular), 2.4 y 2.5 aplicadas a esta modulación.
+
+
+
+==================================================================================================
+
+Cuestión 3.2. Modifique el programa sistAM variando el índice de modulación  a los
+siguientes valores: 0.5, 1 y 2. Explique las diferencias que observe en las señales implicadas.
+¿Tiene algún efecto el que haya sobremodulación, > 1?
+
+
+
+==================================================================================================
+
+Cuestión 3.3. Repita los apartados 2.6 y 2.7 para la modulación AM. Para ello, cree el
+programa correspondiente, snrAM. Obtenga la SNR para los siguientes valores de  0.25, 0.5,
+0.8 y 1. Compare los resultados con los que obtuvo para la DBL.
