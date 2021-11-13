@@ -12,16 +12,16 @@ fm1 = 1E3;      % Frecuencia de un tono dentro de la banda
 fm2 = 0.2E3;    % Frecuencia de otro señal dentro de la banda
 f0 = 20E3;      % Frecuencia de la portadora
 A = 100;        % Amplificación de la señal transmitida
-faseTx = 0;     % Desfase de la portadora usada en Transmisión
-Bt = _________ ;% Ancho de banda de la señal modulada MQ
+faseTx = pi;     % Desfase de la portadora usada en Transmisión
+Bt = 2*W ;% Ancho de banda de la señal modulada MQ
 
 % Parámetros del Canal
 a = 0.01;       % Atenuación
-N0_2 = 0;%1e-10;   % Densidad espectral de potencia del Ruido
+N0_2 = 1e-12;%1e-10;   % Densidad espectral de potencia del Ruido
 
 % Parámetros del Demodulador
 faseRx = 0;     % Desfase de la portadora usada en Recepción
-WPOS= _________; %Ancho de banda del filtro posdetector
+WPOS= W; %Ancho de banda del filtro posdetector
 
 % Parámetros de representación
 t1 = 0.01;      % Instante de tiempo inicial a representar
@@ -29,20 +29,25 @@ t2 = 0.02;      % Instante de tiempo final a representar
 % ******************************************************
 
 % MODULADOR 
-% Señal en fase
-m1 = GenSignal(t,'coseno',fm1);         % Señal en fase
-%m1 = GenSignalSound(t,'chord',W);     % Señal de audio 
-m2= GenSignal(t,'triangular',fm2,pi/2); % Señal en cuadratura
-%m2 = GenSignalSound(t,'ding',W); 
+%Señal en fase
+%m1 = GenSignal(t,'coseno',fm1);         % Señal en fase
+m1 = GenSignalSound(t,'chord.wav',W);        % Señal de audio en fase
+%m2= GenSignal(t,'triangular',fm2,pi/2); % Señal en cuadratura
+sm2 = GenSignalSound(t,'ding.wav',W);         % Señal de audio en cuadratura
 
 ptx1 = GenSignal(t,'coseno',f0,faseTx,A);      % Portadora en fase          
-ptx2 = GenSignal(t,'coseno',f0,faseTx+_________,A); % Portadora en cuadratura
+ptx2 = GenSignal(t,'coseno',f0,faseTx+pi/2,A); % Portadora en cuadratura
 
-xT = _________;      % Señal modulada
+xT = m1.*ptx1*sqrt(2) + m2.*ptx2+sqrt(2);      % Señal modulada
 
 % CANAL (SIN RUIDO)
-r = _________;  % Señal recibida
-                
+r = a*xT;  % Señal recibida
+
+% CANAL (SOLO RUIDO)
+r2 = Ruido(t,N0_2);
+            
+% CANAL (Con Ruido)
+%r = a*xT + Ruido(t,N0_2); 
 
 % DEMODULACIÓN DE LA COMPONENTE EN FASE
 prx1 = GenSignal(t,'coseno',f0,faseRx);      % Tono utilizado para demodular en fase
@@ -50,10 +55,11 @@ ys = r *sqrt(2) .*prx1;
 s1 = filtroPasoBajo(t,ys,WPOS);              % Señal demodulada en fase
 
 % DEMODULACIÓN DE LA COMPONENTE EN CUADRATURA
-prx2 = GenSignal(t,'coseno',f0,faseRx +_________);   % Tono utilizado para demodular en fase
-ys = _________; 
-s2 = _________; % Señal demodulada en cuadratura
-
+prx2 = GenSignal(t,'coseno',f0,faseRx + pi/2);   % Tono utilizado para demodular en fase
+ys = r*sqrt(2).*prx2; 
+s2 = filtroPasoBajo(t,ys,WPOS);             % Señal demodulada en cuadratura
+graficas=1;
+if(graficas==1)
 % REPRESENTACIÓN GRÁFICA DE LAS SEÑALES
 close all;
 % En el tiempo
@@ -73,4 +79,4 @@ subplot(2,2,4);Espectro(t,s2,'Espectro demodulada2',0,1.5*W);
 
 figure(4);subplot(2,1,1);Espectro(t,xT,'Espectro Modulada',f0-1.5*W,f0+1.5*W,f0-Bt/2,f0+Bt/2);
 subplot(2,1,2);Espectro(t,r,'Espectro recibida',f0-1.5*W,f0+1.5*W);
-
+end

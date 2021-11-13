@@ -46,6 +46,7 @@ if factor >= 1
 else
    error('No se contempla que la frecuencia de muestreo sea menor que la del archivo') 
 end
+end
     
 
 

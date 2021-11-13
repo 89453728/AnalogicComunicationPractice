@@ -1,5 +1,8 @@
 function [s]=sf(x,T,N)
 % funcion que calcula la serie de fourier de una funcion discreta
+%
+% s = sf(x,T,N)
+%
 % s es la salida con la aproximacion en serie de fourier
 % x es la señal real
 % T es el periodo de dicha señal
